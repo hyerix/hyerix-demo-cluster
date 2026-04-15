@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "exportedAt": "2026-04-14T00:00:00Z",
+  "appVersion": "1.0.0",
+  "connections": [
+    {
+      "name": "Aerolux Logistics",
+      "url": "nats://localhost:24222",
+      "authType": "none",
+      "credentials": null
+    }
+  ]
+}

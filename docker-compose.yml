@@ -1,0 +1,212 @@
+# Aerolux Logistics — multi-region NATS JetStream supercluster.
+#
+#     aerolux-eu  ◀────gateway────▶  aerolux-us
+#          ▲                              ▲
+#          │                              │
+#          └──────── gateway ─────────── aerolux-apac
+#
+# Each region has 3 routed JetStream nodes (R=3) and one leaf-node edge POP
+# attached to the regional hub. Hyerix connects to nats://localhost:24222
+# and auto-discovers the rest of the topology via INFO frames.
+#
+# Spin up:
+#   docker compose up -d
+#
+# First run: ~2-3 minutes while the nats + python images pull. Subsequent
+# runs come up in ~30 seconds.
+
+services:
+
+  # ─── Region: aerolux-eu ───────────────────────────────────────────────
+  nats-eu-1:
+    image: nats:2.12-alpine
+    container_name: aerolux-nats-eu-1
+    hostname: nats-eu-1
+    ports:
+      - "24222:4222"
+      - "28222:8222"
+    command: ["-c", "/etc/nats/nats.conf", "--name", "nats-eu-1"]
+    volumes:
+      - nats_eu_1_data:/data
+      - ./config/nats-eu.conf:/etc/nats/nats.conf:ro
+
+  nats-eu-2:
+    image: nats:2.12-alpine
+    container_name: aerolux-nats-eu-2
+    hostname: nats-eu-2
+    ports:
+      - "24223:4222"
+      - "28223:8222"
+    command: ["-c", "/etc/nats/nats.conf", "--name", "nats-eu-2"]
+    volumes:
+      - nats_eu_2_data:/data
+      - ./config/nats-eu.conf:/etc/nats/nats.conf:ro
+
+  nats-eu-3:
+    image: nats:2.12-alpine
+    container_name: aerolux-nats-eu-3
+    hostname: nats-eu-3
+    ports:
+      - "24224:4222"
+      - "28224:8222"
+    command: ["-c", "/etc/nats/nats.conf", "--name", "nats-eu-3"]
+    volumes:
+      - nats_eu_3_data:/data
+      - ./config/nats-eu.conf:/etc/nats/nats.conf:ro
+
+  # ─── Region: aerolux-us ───────────────────────────────────────────────
+  nats-us-1:
+    image: nats:2.12-alpine
+    container_name: aerolux-nats-us-1
+    hostname: nats-us-1
+    ports:
+      - "24232:4222"
+      - "28232:8222"
+    command: ["-c", "/etc/nats/nats.conf", "--name", "nats-us-1"]
+    volumes:
+      - nats_us_1_data:/data
+      - ./config/nats-us.conf:/etc/nats/nats.conf:ro
+
+  nats-us-2:
+    image: nats:2.12-alpine
+    container_name: aerolux-nats-us-2
+    hostname: nats-us-2
+    ports:
+      - "24233:4222"
+      - "28233:8222"
+    command: ["-c", "/etc/nats/nats.conf", "--name", "nats-us-2"]
+    volumes:
+      - nats_us_2_data:/data
+      - ./config/nats-us.conf:/etc/nats/nats.conf:ro
+
+  nats-us-3:
+    image: nats:2.12-alpine
+    container_name: aerolux-nats-us-3
+    hostname: nats-us-3
+    ports:
+      - "24234:4222"
+      - "28234:8222"
+    command: ["-c", "/etc/nats/nats.conf", "--name", "nats-us-3"]
+    volumes:
+      - nats_us_3_data:/data
+      - ./config/nats-us.conf:/etc/nats/nats.conf:ro
+
+  # ─── Region: aerolux-apac ─────────────────────────────────────────────
+  nats-apac-1:
+    image: nats:2.12-alpine
+    container_name: aerolux-nats-apac-1
+    hostname: nats-apac-1
+    ports:
+      - "24242:4222"
+      - "28242:8222"
+    command: ["-c", "/etc/nats/nats.conf", "--name", "nats-apac-1"]
+    volumes:
+      - nats_apac_1_data:/data
+      - ./config/nats-apac.conf:/etc/nats/nats.conf:ro
+
+  nats-apac-2:
+    image: nats:2.12-alpine
+    container_name: aerolux-nats-apac-2
+    hostname: nats-apac-2
+    ports:
+      - "24243:4222"
+      - "28243:8222"
+    command: ["-c", "/etc/nats/nats.conf", "--name", "nats-apac-2"]
+    volumes:
+      - nats_apac_2_data:/data
+      - ./config/nats-apac.conf:/etc/nats/nats.conf:ro
+
+  nats-apac-3:
+    image: nats:2.12-alpine
+    container_name: aerolux-nats-apac-3
+    hostname: nats-apac-3
+    ports:
+      - "24244:4222"
+      - "28244:8222"
+    command: ["-c", "/etc/nats/nats.conf", "--name", "nats-apac-3"]
+    volumes:
+      - nats_apac_3_data:/data
+      - ./config/nats-apac.conf:/etc/nats/nats.conf:ro
+
+  # ─── Edge POPs (leaf nodes) ───────────────────────────────────────────
+  edge-frankfurt:
+    image: nats:2.12-alpine
+    container_name: aerolux-edge-frankfurt
+    hostname: edge-frankfurt
+    ports:
+      - "24252:4222"
+      - "28252:8222"
+    command: ["-c", "/etc/nats/nats.conf"]
+    volumes:
+      - edge_frankfurt_data:/data
+      - ./config/leaf-frankfurt.conf:/etc/nats/nats.conf:ro
+    depends_on:
+      - nats-eu-1
+      - nats-eu-2
+      - nats-eu-3
+
+  edge-virginia:
+    image: nats:2.12-alpine
+    container_name: aerolux-edge-virginia
+    hostname: edge-virginia
+    ports:
+      - "24253:4222"
+      - "28253:8222"
+    command: ["-c", "/etc/nats/nats.conf"]
+    volumes:
+      - edge_virginia_data:/data
+      - ./config/leaf-virginia.conf:/etc/nats/nats.conf:ro
+    depends_on:
+      - nats-us-1
+      - nats-us-2
+      - nats-us-3
+
+  edge-singapore:
+    image: nats:2.12-alpine
+    container_name: aerolux-edge-singapore
+    hostname: edge-singapore
+    ports:
+      - "24254:4222"
+      - "28254:8222"
+    command: ["-c", "/etc/nats/nats.conf"]
+    volumes:
+      - edge_singapore_data:/data
+      - ./config/leaf-singapore.conf:/etc/nats/nats.conf:ro
+    depends_on:
+      - nats-apac-1
+      - nats-apac-2
+      - nats-apac-3
+
+  # ─── Scenario generator (seeds + lives) ───────────────────────────────
+  generator:
+    build: ./scenarios/aerolux
+    container_name: aerolux-generator
+    command:
+      - "--live"
+      - "--nats-url"
+      - "nats://nats-eu-1:4222,nats://nats-us-1:4222,nats://nats-apac-1:4222"
+    depends_on:
+      - nats-eu-1
+      - nats-eu-2
+      - nats-eu-3
+      - nats-us-1
+      - nats-us-2
+      - nats-us-3
+      - nats-apac-1
+      - nats-apac-2
+      - nats-apac-3
+    restart: unless-stopped
+
+volumes:
+  nats_eu_1_data:
+  nats_eu_2_data:
+  nats_eu_3_data:
+  nats_us_1_data:
+  nats_us_2_data:
+  nats_us_3_data:
+  nats_apac_1_data:
+  nats_apac_2_data:
+  nats_apac_3_data:
+  edge_frankfurt_data:
+  edge_virginia_data:
+  edge_singapore_data:
