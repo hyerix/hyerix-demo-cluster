@@ -2,8 +2,14 @@
 
 **Runnable NATS JetStream demo cluster for Hyerix. A realistic multi-region supercluster modelled after a multinational freight company — Aerolux Logistics. Spin it up in one command.**
 
-> [!IMPORTANT]
-> **Hyerix is launching today on Product Hunt.** Vote, comment, or share feedback: [producthunt.com/products/hyerix](https://www.producthunt.com/products/hyerix)
+<p align="center">
+  <a href="https://www.producthunt.com/products/hyerix?utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-hyerix">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1125826&theme=dark">
+      <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1125826&theme=light" alt="Hyerix - AI-native desktop GUI for NATS infrastructure | Product Hunt" width="250" height="54">
+    </picture>
+  </a>
+</p>
 
 <p align="center">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-1f2937">
